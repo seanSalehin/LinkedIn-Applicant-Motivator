@@ -3,6 +3,10 @@
     "name": "Hide LinkedIn Applicants",
     "version":"1.0.0",
     "description": "Hide applicant count on LinkedIn job pages",
+    "icons":{
+    "48": "48.png",
+    "128": "128.png"
+    },
     "permissions": ["activeTab"],
     "host_permissions": ["https://www.linkedin.com/*"],
     "content_scripts": [
