@@ -1,21 +1,25 @@
 {
-    "manifest_version":3,
-    "name": "Hide LinkedIn Applicants",
-    "version":"1.0.0",
-    "description": "Hide applicant count on LinkedIn job pages",
-    "icons":{
+  "manifest_version": 3,
+  "name": "Hide LinkedIn Applicants",
+  "version": "1.0.1",
+  "description": "Hide applicant count on LinkedIn job pages",
+  "icons": {
     "48": "48.png",
     "128": "128.png"
-    },
-    "permissions": ["activeTab"],
-    "host_permissions": ["https://www.linkedin.com/*"],
-    "content_scripts": [
-        {
-        "matches": ["https://www.linkedin.com/jobs/*"],
-        "js": ["content.js"]
-        }
-    ],
-    "action": {
-        "default_popup": "popup.html"
+  },
+  "host_permissions": ["https://www.linkedin.com/*"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/jobs/*",
+        "https://www.linkedin.com/jobs/search-results/*",
+        "https://www.linkedin.com/jobs/view/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
     }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
 }
