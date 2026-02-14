@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hide LinkedIn Applicants",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Hide applicant count on LinkedIn job pages",
   "icons": {
     "48": "48.png",
@@ -16,7 +16,7 @@
         "https://www.linkedin.com/jobs/view/*"
       ],
       "js": ["content.js"],
-      "run_at": "document_start"
+      "run_at": "document_idle"
     }
   ],
   "action": {

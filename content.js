@@ -1,3 +1,5 @@
+console.log("✅ HideApplicants running:", location.href);
+
 const sentences = [
   "CEO dreaming about your resume.",
   "CEO just liked your selfie.",
@@ -36,34 +38,68 @@ function getRandomSentence() {
   return sentences[Math.floor(Math.random() * sentences.length)];
 }
 
-function hideApplicantCount() {
-  const nodes = document.querySelectorAll("span, div, p, a");
+function shouldReplace(raw) {
+  const t = (raw || "").trim();
+  if (!t) return false;
 
-  nodes.forEach((el) => {
-    const text = (el.textContent || "").trim();
-    const m = text.match(/\b(\d+)\s+applicants?\b/i);
-    if (!m) return;
-    const count = parseInt(m[1], 10);
-    if (Number.isFinite(count) && count > 10) {
-      el.textContent = getRandomSentence();
+  const s = t.replace(/\s+/g, " ");
+
+  return (
+    /\b\d+\s+applicants?\b/i.test(s) ||
+    /\bover\s+\d+\s+applicants?\b/i.test(s) ||
+    /\b(over\s+)?\d+\s+people\s+clicked\s+apply\b/i.test(s) ||
+    /\b(over\s+)?\d+\s+people\s+applied\b/i.test(s) ||
+    /\bbe an early applicant\b/i.test(s) ||
+    /\b(?:over\s+)?\d+\s+people\s+clicked\s+apply\b/i.test(s) || 
+    /\b(?:over\s+)?\d+\s+people\s+applied\b/i.test(s) ||
+    /\b\d+\s+applicants?\b/i.test(s) ||
+    /\bover\s+\d+\s+applicants?\b/i.test(s) ||
+    /\b\d+\s+applicants?\s+in\s+the\s+past\s+(day|week|month)\b/i.test(s)
+  );
+}
+
+function applyOnce() {
+  const spans = document.getElementsByTagName("span");
+  for (const el of spans) {
+    if (el.dataset.hideApplicants === "1") continue;
+    const raw = (el.textContent || "").trim();
+    if (!shouldReplace(raw)) continue;
+    if (raw.length > 120) continue;
+    el.textContent = getRandomSentence();
+    el.dataset.hideApplicants = "1";
+  }
+}
+
+let queued = false;
+function scheduleApply() {
+  if (queued) return;
+  queued = true;
+
+  requestAnimationFrame(() => {
+    queued = false;
+    try {
+      applyOnce();
+    } catch (e) {
+      console.log("HideApplicants error:", e);
     }
   });
 }
 
-// URL changes without reload
+scheduleApply();
+setTimeout(scheduleApply, 500);
+setTimeout(scheduleApply, 1500);
+setTimeout(scheduleApply, 3000);
+
+new MutationObserver(scheduleApply).observe(document.documentElement, {
+  childList: true,
+  subtree: true,
+});
+
 let lastUrl = location.href;
-function tick() {
+setInterval(() => {
   if (location.href !== lastUrl) {
     lastUrl = location.href;
-    setTimeout(hideApplicantCount, 300);
-    setTimeout(hideApplicantCount, 1500);
+    scheduleApply();
+    setTimeout(scheduleApply, 1200);
   }
-}
-
-(function start() {
-  hideApplicantCount();
-  setTimeout(hideApplicantCount, 1500);
-  const observer = new MutationObserver(() => hideApplicantCount());
-  observer.observe(document.documentElement, { childList: true, subtree: true });
-  setInterval(tick, 500);
-})();
+}, 400);
